@@ -47,6 +47,12 @@ export function Sidebar() {
         </CardContent>
       </Card>
 
+      <ClassManagement />
+
+      <CreatePostDialog
+        open={showCreatePost}
+        onOpenChange={setShowCreatePost}
+      />
     </div>
   )
 }

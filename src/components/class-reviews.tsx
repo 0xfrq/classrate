@@ -137,12 +137,7 @@ export function ClassReviews() {
       </div>
 
       <Tabs defaultValue="classes" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="classes" className="flex items-center gap-1 text-xs">
-            <BookOpen className="h-3 w-3" />
-            <span className="hidden sm:inline">My Classes</span>
-            <span className="sm:hidden">Classes</span>
-          </TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="lectures" className="flex items-center gap-1 text-xs">
             <Calendar className="h-3 w-3" />
             <span className="hidden sm:inline">Lecture Reviews</span>
@@ -150,60 +145,11 @@ export function ClassReviews() {
           </TabsTrigger>
           <TabsTrigger value="final" className="flex items-center gap-1 text-xs">
             <GraduationCap className="h-3 w-3" />
-            <span className="hidden sm:inline">Final Reviews</span>
+            <span className="sm:inline">Final Reviews</span>
             <span className="sm:hidden">Final</span>
           </TabsTrigger>
         </TabsList>
 
-        {/* My Classes Tab */}
-        <TabsContent value="classes" className="space-y-4">
-          <div className="flex justify-end">
-            <Button
-              size="sm"
-              onClick={() => setShowCreateClass(true)}
-              className="w-full sm:w-auto"
-            >
-              <Plus className="h-4 w-4 mr-1" />
-              <span className="hidden sm:inline">Add Class</span>
-              <span className="sm:hidden">Add</span>
-            </Button>
-          </div>
-
-          <div className="space-y-4">
-            {classes.length === 0 ? (
-              <Card>
-                <CardContent className="text-center py-8">
-                  <BookOpen className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">No Classes Added</h3>
-                  <p className="text-muted-foreground mb-4">
-                    Start by adding classes you're taking this semester
-                  </p>
-                  <Button onClick={() => setShowCreateClass(true)}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Your First Class
-                  </Button>
-                </CardContent>
-              </Card>
-            ) : (
-              classes.map((classItem) => (
-                <Card key={classItem.id} className="hover:shadow-md transition-shadow">
-                  <CardHeader className="pb-3">
-                    <div className="flex flex-col sm:flex-row items-start justify-between gap-2">
-                      <div className="flex-1 min-w-0">
-                        <CardTitle className="text-base md:text-lg truncate">{classItem.code}</CardTitle>
-                        <p className="text-sm text-muted-foreground truncate">{classItem.name}</p>
-                      </div>
-                      <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                        <Badge variant="outline">{classItem.semester}</Badge>
-                      </div>
-                    </div>
-                    <p className="text-sm text-muted-foreground">{classItem.instructor}</p>
-                  </CardHeader>
-                </Card>
-              ))
-            )}
-          </div>
-        </TabsContent>
 
         <TabsContent value="lectures" className="space-y-4">
 
@@ -265,7 +211,6 @@ export function ClassReviews() {
           )}
         </TabsContent>
 
-        {/* Final Class Reviews Tab */}
         <TabsContent value="final" className="space-y-4">
           <div className="flex justify-end">
             <Button
@@ -275,7 +220,7 @@ export function ClassReviews() {
               disabled={classes.length === 0}
             >
               <Plus className="h-4 w-4 mr-1" />
-              <span className="hidden sm:inline">Final Review</span>
+              <span className="sm:inline">Final Review</span>
               <span className="sm:hidden">Review</span>
             </Button>
           </div>

@@ -22,45 +22,71 @@ cd classrate
 npm install
 ```
 
-3. Set up the database:
+3. Set up environment variables:
+```bash
+cp .env.example .env
+```
+
+4. Set up the database:
 ```bash
 npx prisma generate
 npx prisma db push
 ```
 
-4. Run the development server:
+5. Run the development server:
 ```bash
 npm run dev
 ```
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser.
+6. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Database Schema
 
 The application uses the following main entities:
 
 - **User**: User accounts and profiles
-- **Post**: Microblog posts and discussions
+- **Post**: Microblog posts and discussions  
 - **Class**: Course information and metadata
-- **ClassReview**: User reviews and ratings for classes
+- **ClassReview**: Final semester reviews and ratings for classes
+- **LectureReview**: Individual lecture reviews and ratings
+- **Lecture**: Lecture information linked to classes
 - **Exercise**: Optional to-do items and assignments
 
 ## Project Structure
 
 ```
 src/
-├── app/                 # Next.js App Router pages
-├── components/          # React components
-│   ├── ui/             # shadcn/ui components
-│   ├── header.tsx      # Navigation header
-│   ├── sidebar.tsx     # Left sidebar with stats
-│   ├── post-feed.tsx   # Main microblog feed
-│   └── class-reviews.tsx # Class rating section
-├── lib/                # Utility functions
-│   ├── db.ts          # Database connection
-│   └── utils.ts       # Helper functions
-└── prisma/             # Database schema and migrations
+├── app/                    # Next.js App Router pages and API routes
+│   ├── api/               # Backend API endpoints
+│   │   ├── classes/       # Class management
+│   │   ├── lecture-reviews/ # Lecture review system  
+│   │   ├── reviews/       # Final class reviews
+│   │   └── posts/         # Microblog posts
+│   ├── layout.tsx         # Root layout
+│   └── page.tsx          # Home page
+├── components/            # React components
+│   ├── ui/               # shadcn/ui components
+│   ├── header.tsx        # Navigation header
+│   ├── sidebar.tsx       # Left sidebar with semester progress
+│   ├── post-feed.tsx     # Main microblog feed
+│   ├── class-reviews.tsx # Three-tab class management system
+│   └── create-*-dialog.tsx # Form dialogs for creating content
+├── lib/                  # Utility functions
+│   ├── db.ts            # Prisma database connection
+│   └── utils.ts         # Helper functions
+└── prisma/              # Database schema and migrations
+    └── schema.prisma    # Database schema definition
 ```
+
+## Features
+
+- **Semester System**: 8-semester progression tracking
+- **Three-Tab Workflow**: 
+  1. Add Classes → 2. Review Lectures → 3. Final Reviews
+- **Microblogging**: Twitter-like posts for class discussions
+- **Class Management**: Add and organize courses by semester
+- **Lecture Reviews**: Rate individual lectures with comments
+- **Final Reviews**: End-of-semester class evaluations
 
 ## Contributing
 

@@ -104,7 +104,7 @@ export function CreateLectureReviewDialog({ open, onOpenChange, onReviewCreated,
           )
           const maxLectureNumber = Math.max(
             0, 
-            ...classLectures.map((review: any) => review.lecture.number || 0)
+            ...classLectures.map((review: any) => review.lecture.lectureNumber || 0)
           )
           setFormData(prev => ({
             ...prev,

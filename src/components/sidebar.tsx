@@ -1,10 +1,11 @@
 "use client"
 
 import { useState } from 'react'
-import { Plus } from 'lucide-react'
+import { Plus, Settings } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { CreatePostDialog } from '@/components/create-post-dialog'
+import { ClassManagement } from '@/components/class-management'
 
 export function Sidebar() {
   const [showCreatePost, setShowCreatePost] = useState(false)
@@ -46,10 +47,6 @@ export function Sidebar() {
         </CardContent>
       </Card>
 
-      <CreatePostDialog
-        open={showCreatePost}
-        onOpenChange={setShowCreatePost}
-      />
     </div>
   )
 }

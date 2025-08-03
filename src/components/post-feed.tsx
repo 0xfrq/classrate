@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { formatDistanceToNow } from 'date-fns'
-import { Heart, MessageCircle, Share, MoreHorizontal, Star, Plus, Send } from 'lucide-react'
+import { Heart, MessageCircle, Share, MoreHorizontal, Star, Plus, Send, Trash2 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -54,6 +54,7 @@ interface LectureReview {
   content: string
   rating: number
   user: {
+    id: string
     name: string
     avatar?: string
   }
@@ -178,6 +179,46 @@ export function PostFeed() {
       }
     } catch (error) {
       console.error('Error creating reply:', error)
+    }
+  }
+
+  const handleDeletePost = async (postId: string) => {
+    if (!confirm('Are you sure you want to delete this post?')) return
+
+    try {
+      const response = await fetch(`/api/posts/delete?id=${postId}`, {
+        method: 'DELETE',
+      })
+
+      if (response.ok) {
+        await fetchFeedData() // Refresh feed
+      } else {
+        const error = await response.json()
+        alert(`Failed to delete post: ${error.error || 'Unknown error'}`)
+      }
+    } catch (error) {
+      console.error('Error deleting post:', error)
+      alert('Failed to delete post')
+    }
+  }
+
+  const handleDeleteReview = async (reviewId: string) => {
+    if (!confirm('Are you sure you want to delete this lecture review?')) return
+
+    try {
+      const response = await fetch(`/api/lecture-reviews/delete?id=${reviewId}`, {
+        method: 'DELETE',
+      })
+
+      if (response.ok) {
+        await fetchFeedData() // Refresh feed
+      } else {
+        const error = await response.json()
+        alert(`Failed to delete review: ${error.error || 'Unknown error'}`)
+      }
+    } catch (error) {
+      console.error('Error deleting review:', error)
+      alert('Failed to delete review')
     }
   }
 
@@ -363,9 +404,24 @@ export function PostFeed() {
                     </Button>
                   </div>
                   
-                  <Button variant="ghost" size="sm" className="text-muted-foreground">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
+                  {/* Delete button - only show for content owner */}
+                  {((item.type === 'post' && currentUser && item.author.id === currentUser.id) ||
+                    (item.type === 'lecture-review' && currentUser && item.user.id === currentUser.id)) && (
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="text-muted-foreground hover:text-red-500"
+                      onClick={() => {
+                        if (item.type === 'post') {
+                          handleDeletePost(item.id)
+                        } else {
+                          handleDeleteReview(item.id)
+                        }
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
                 </div>
 
                 {/* Replies Section */}

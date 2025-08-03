@@ -2,47 +2,6 @@
 
 A Twitter-like class review application built with Next.js, allowing students to share experiences, rate classes, and manage course-related tasks.
 
-## Features
-
-### 🐦 Microblogging Feed
-- Twitter-like posts for class discussions
-- Real-time updates and interactions
-- Class-specific hashtags and mentions
-- Like, comment, and share functionality
-
-### ⭐ Class Rating System
-- 1-5 star rating system for classes
-- Detailed reviews and feedback
-- Instructor and semester information
-- Class recommendations based on ratings
-
-### 📝 Review Management
-- Create, read, update, and delete class reviews
-- Search and filter reviews by class, instructor, or semester
-- Anonymous review options
-- Helpful/unhelpful voting system
-
-### ✅ Exercise To-Do Management (Optional)
-- Track assignments and exercises for each class
-- Due date reminders and notifications
-- Mark tasks as complete
-- Progress tracking across multiple classes
-
-### 🔄 Database Synchronization
-- Real-time data persistence with Prisma ORM
-- SQLite database for local development
-- Automatic data syncing across sessions
-- Data backup and recovery features
-
-## Tech Stack
-
-- **Framework**: Next.js 15 with App Router
-- **UI Components**: shadcn/ui + Tailwind CSS
-- **Database**: SQLite with Prisma ORM
-- **Language**: TypeScript
-- **Icons**: Lucide React
-- **Styling**: Tailwind CSS
-
 ## Getting Started
 
 ### Prerequisites

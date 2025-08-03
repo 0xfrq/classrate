@@ -23,8 +23,10 @@ import {
 } from '@/components/ui/select'
 
 interface CreateLectureReviewDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
+  onReviewCreated?: () => void
+  children?: React.ReactNode
 }
 
 interface ClassOption {
@@ -33,7 +35,8 @@ interface ClassOption {
   name: string
 }
 
-export function CreateLectureReviewDialog({ open, onOpenChange }: CreateLectureReviewDialogProps) {
+export function CreateLectureReviewDialog({ open, onOpenChange, onReviewCreated, children }: CreateLectureReviewDialogProps) {
+  const [isOpen, setIsOpen] = useState(false)
   const [classes, setClasses] = useState<ClassOption[]>([])
   const [formData, setFormData] = useState({
     classCode: '',
@@ -44,6 +47,11 @@ export function CreateLectureReviewDialog({ open, onOpenChange }: CreateLectureR
     review: ''
   })
   const [isLoading, setIsLoading] = useState(false)
+
+  const handleOpenChange = (newOpen: boolean) => {
+    setIsOpen(newOpen)
+    onOpenChange?.(newOpen)
+  }
 
   const getJakartaDate = () => {
     const now = new Date()
@@ -139,8 +147,8 @@ export function CreateLectureReviewDialog({ open, onOpenChange }: CreateLectureR
           rating: 0,
           review: ''
         })
-        onOpenChange(false)
-        window.location.reload()
+        handleOpenChange(false)
+        onReviewCreated?.()
       } else {
         const error = await response.json()
         alert(`Error: ${error.error}`)
@@ -176,8 +184,127 @@ export function CreateLectureReviewDialog({ open, onOpenChange }: CreateLectureR
     )
   }
 
+  if (children) {
+    return (
+      <>
+        <div onClick={() => handleOpenChange(true)}>
+          {children}
+        </div>
+        <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+          <DialogContent className="sm:max-w-[90vw] md:max-w-[600px] max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Review a Lecture</DialogTitle>
+              <DialogDescription>
+                Share your thoughts about a specific lecture to help your classmates.
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4 md:space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="classCode">Class *</Label>
+                  <Select
+                    value={formData.classCode}
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, classCode: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a class" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {classes.map((classOption) => (
+                        <SelectItem key={classOption.id} value={classOption.code}>
+                          {classOption.code} - {classOption.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {classes.length === 0 && (
+                    <p className="text-xs text-muted-foreground">
+                      No classes found. Add a class first.
+                    </p>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="lectureNumber">Lecture Number</Label>
+                  <Input
+                    id="lectureNumber"
+                    placeholder="Auto-generated"
+                    type="number"
+                    value={formData.lectureNumber}
+                    onChange={(e) => setFormData(prev => ({ ...prev, lectureNumber: parseInt(e.target.value) || 1 }))}
+                    className="bg-muted"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Automatically set to next number
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="lectureTitle">Lecture Title *</Label>
+                <Input
+                  id="lectureTitle"
+                  placeholder="e.g., Binary Trees and Search Algorithms"
+                  value={formData.lectureTitle}
+                  onChange={(e) => setFormData(prev => ({ ...prev, lectureTitle: e.target.value }))}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="date">Lecture Date</Label>
+                <Input
+                  id="date"
+                  type="date"
+                  value={formData.date}
+                  onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
+                  className="bg-muted"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Automatically set to today (Jakarta time)
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Rating *</Label>
+                {renderStars()}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="review">Lecture Review *</Label>
+                <Textarea
+                  id="review"
+                  placeholder="How was the lecture? Was the material clear? Did you understand the concepts? Any tips for future students?"
+                  value={formData.review}
+                  onChange={(e) => setFormData(prev => ({ ...prev, review: e.target.value }))}
+                  className="min-h-[100px] md:min-h-[120px]"
+                  maxLength={500}
+                />
+                <div className="text-sm text-muted-foreground">
+                  {formData.review.length}/500 characters
+                </div>
+              </div>
+            </div>
+
+            <DialogFooter className="flex-col sm:flex-row gap-2">
+              <Button variant="outline" onClick={() => handleOpenChange(false)} className="w-full sm:w-auto">
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleSubmit} 
+                disabled={!formData.classCode || !formData.lectureTitle || !formData.rating || !formData.review || isLoading}
+                className="w-full sm:w-auto"
+              >
+                {isLoading ? 'Adding Review...' : 'Add Lecture Review'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </>
+    )
+  }
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open || false} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[90vw] md:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Review a Lecture</DialogTitle>
@@ -273,7 +400,7 @@ export function CreateLectureReviewDialog({ open, onOpenChange }: CreateLectureR
         </div>
 
         <DialogFooter className="flex-col sm:flex-row gap-2">
-          <Button variant="outline" onClick={() => onOpenChange(false)} className="w-full sm:w-auto">
+          <Button variant="outline" onClick={() => handleOpenChange(false)} className="w-full sm:w-auto">
             Cancel
           </Button>
           <Button 

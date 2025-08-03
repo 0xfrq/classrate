@@ -205,20 +205,7 @@ export function ClassReviews() {
           </div>
         </TabsContent>
 
-        {/* Lecture Reviews Tab */}
         <TabsContent value="lectures" className="space-y-4">
-          <div className="flex justify-end">
-            <Button
-              size="sm"
-              onClick={() => setShowCreateLectureReview(true)}
-              className="w-full sm:w-auto"
-              disabled={classes.length === 0}
-            >
-              <Plus className="h-4 w-4 mr-1" />
-              <span className="hidden sm:inline">Review Lecture</span>
-              <span className="sm:hidden">Review</span>
-            </Button>
-          </div>
 
           {classes.length === 0 ? (
             <Card>

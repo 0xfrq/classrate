@@ -260,14 +260,14 @@ export function PostFeed() {
       {/* Action Buttons - Mobile Optimized */}
       <div className="flex flex-col sm:flex-row gap-2 mb-6">
         <CreatePostDialog onPostCreated={fetchFeedData}>
-          <Button className="w-full sm:flex-1 hover:bg-gray-700">
+          <Button className="w-full sm:flex-1 bg-blue-600 hover:bg-blue-700">
             <Plus className="h-4 w-4 mr-2" />
             Create Post
           </Button>
         </CreatePostDialog>
         
         <CreateLectureReviewDialog onReviewCreated={fetchFeedData}>
-          <Button variant="outline" className="w-full sm:flex-1 border-black text-black-600 hover:bg-gray-200">
+          <Button variant="outline" className="w-full sm:flex-1 border-blue-600 text-blue-600 hover:bg-blue-50">
             <Star className="h-4 w-4 mr-2" />
             Review Lecture
           </Button>

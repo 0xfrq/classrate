@@ -16,14 +16,6 @@ export function Sidebar() {
 
   return (
     <div className="space-y-4 md:space-y-6">
-      <Button
-        onClick={() => setShowCreatePost(true)}
-        className="w-full"
-        size="lg"
-      >
-        <Plus className="h-4 w-4 mr-2" />
-        Create Post
-      </Button>
 
       <Card>
         <CardHeader>

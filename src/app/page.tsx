@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { PostFeed } from '@/components/post-feed'
-import { ClassReviews } from '@/components/class-reviews'
+import { GoogleCalendar } from '@/components/google-calendar'
 import { Sidebar } from '@/components/sidebar'
 import { Header } from '@/components/header'
 import { AuthDialog } from '@/components/auth-dialog'
@@ -155,9 +155,9 @@ export default function Home() {
             <PostFeed />
           </div>
           
-          {/* Class Reviews Section */}
+          {/* Google Calendar Section */}
           <div className="lg:col-span-1 order-2 lg:order-3">
-            <ClassReviews />
+            <GoogleCalendar />
           </div>
         </div>
       </div>

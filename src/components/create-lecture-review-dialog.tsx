@@ -62,28 +62,34 @@ export function CreateLectureReviewDialog({ open, onOpenChange, onReviewCreated,
   useEffect(() => {
     const fetchClasses = async () => {
       try {
+        console.log('Fetching classes...')
         const response = await fetch('/api/classes')
+        console.log('Classes response status:', response.status)
         if (response.ok) {
           const data = await response.json()
-          setClasses(data.map((classItem: any) => ({
+          console.log('Classes data:', data)
+          const mappedClasses = data.map((classItem: any) => ({
             id: classItem.id,
             code: classItem.code,
             name: classItem.name
-          })))
+          }))
+          console.log('Mapped classes:', mappedClasses)
+          setClasses(mappedClasses)
         }
       } catch (error) {
         console.error('Error fetching classes:', error)
       }
     }
 
-    if (open) {
+    if (open || isOpen) {
+      console.log('Dialog opened, fetching classes...')
       fetchClasses()
       setFormData(prev => ({
         ...prev,
         date: getJakartaDate()
       }))
     }
-  }, [open])
+  }, [open, isOpen])
 
   useEffect(() => {
     const getNextLectureNumber = async () => {
@@ -150,8 +156,15 @@ export function CreateLectureReviewDialog({ open, onOpenChange, onReviewCreated,
         handleOpenChange(false)
         onReviewCreated?.()
       } else {
-        const error = await response.json()
-        alert(`Error: ${error.error}`)
+        let errorMessage = 'Failed to create lecture review'
+        try {
+          const error = await response.json()
+          errorMessage = error.error || errorMessage
+        } catch (e) {
+          // If response is not JSON, use default message
+          console.error('Non-JSON error response:', e)
+        }
+        alert(`Error: ${errorMessage}`)
       }
     } catch (error) {
       console.error('Error creating lecture review:', error)

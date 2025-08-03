@@ -13,8 +13,8 @@ A Twitter-like class review application built with Next.js, allowing students to
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/rateclass.git
-cd rateclass
+git clone https://github.com/yourusername/classrate.git
+cd classrate
 ```
 
 2. Install dependencies:

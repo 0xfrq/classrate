@@ -385,7 +385,7 @@ export function PostFeed() {
                           <Heart className={`h-4 w-4 mr-1 ${
                             isPostLikedByUser(item) ? 'fill-current' : ''
                           }`} />
-                          {item._count.likes}
+                          {item._count?.likes || 0}
                         </Button>
                         
                         <Button 
@@ -395,7 +395,7 @@ export function PostFeed() {
                           onClick={() => toggleReplies(item.id)}
                         >
                           <MessageCircle className="h-4 w-4 mr-1" />
-                          {item._count.replies}
+                          {item._count?.replies || 0}
                         </Button>
                       </>
                     )}
@@ -483,7 +483,7 @@ export function PostFeed() {
                           <div className="flex items-center space-x-2 mt-1">
                             <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-red-500 h-6 px-1">
                               <Heart className="h-3 w-3 mr-1" />
-                              {reply._count.likes}
+                              {reply._count?.likes || 0}
                             </Button>
                           </div>
                         </div>

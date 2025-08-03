@@ -11,10 +11,6 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Star } from 'lucide-react'
-import { formatDistanceToNow } from 'date-fns'
 
 interface ShareDialogProps {
   children: React.ReactNode
@@ -46,41 +42,15 @@ export function ShareDialog({ children, item }: ShareDialogProps) {
   
   const shareUrl = `${typeof window !== 'undefined' ? window.location.origin : 'https://classrate.com'}`
 
-  const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <Star
-        key={i}
-        className={`h-4 w-4 ${
-          i < rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
-        }`}
-      />
-    ))
-  }
-
   const captureCardAsImage = async () => {
     if (!cardRef.current) return null
 
     try {
       setIsCapturing(true)
       
-      // Use modern browser APIs to capture the element
-      const canvas = document.createElement('canvas')
-      const ctx = canvas.getContext('2d')
-      if (!ctx) return null
-
-      const rect = cardRef.current.getBoundingClientRect()
-      const scale = 2 // For better quality
-      canvas.width = rect.width * scale
-      canvas.height = rect.height * scale
-      ctx.scale(scale, scale)
-
-      // Create a white background
-      ctx.fillStyle = '#ffffff'
-      ctx.fillRect(0, 0, rect.width, rect.height)
-
-      // Use html2canvas alternative approach
-      const data = await html2canvasAlternative(cardRef.current)
-      return data
+      // Use a simpler approach - create a styled div as an image
+      const cardData = createCardImageData()
+      return cardData
     } catch (error) {
       console.error('Error capturing card:', error)
       return null
@@ -89,47 +59,110 @@ export function ShareDialog({ children, item }: ShareDialogProps) {
     }
   }
 
-  // Alternative method using SVG foreignObject
-  const html2canvasAlternative = async (element: HTMLElement) => {
-    const data = new XMLSerializer().serializeToString(element)
-    const svg = `
-      <svg xmlns="http://www.w3.org/2000/svg" width="400" height="200">
-        <foreignObject width="100%" height="100%">
-          <div xmlns="http://www.w3.org/1999/xhtml">
-            ${element.outerHTML}
-          </div>
-        </foreignObject>
-      </svg>
-    `
+  // Create a simple base64 image from text content
+  const createCardImageData = () => {
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return null
+
+    // Set canvas size for better Instagram compatibility
+    canvas.width = 500
+    canvas.height = 400
     
-    const blob = new Blob([svg], { type: 'image/svg+xml' })
-    const url = URL.createObjectURL(blob)
+    // White background
+    ctx.fillStyle = '#ffffff'
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
     
-    return new Promise<string>((resolve, reject) => {
-      const img = new Image()
-      img.onload = () => {
-        const canvas = document.createElement('canvas')
-        const ctx = canvas.getContext('2d')
-        if (!ctx) {
-          reject(new Error('Could not get canvas context'))
-          return
-        }
-        
-        canvas.width = 400
-        canvas.height = 200
-        
-        // White background
-        ctx.fillStyle = '#ffffff'
-        ctx.fillRect(0, 0, canvas.width, canvas.height)
-        
-        ctx.drawImage(img, 0, 0)
-        const dataUrl = canvas.toDataURL('image/png')
-        URL.revokeObjectURL(url)
-        resolve(dataUrl)
+    // Add subtle border
+    ctx.strokeStyle = '#e5e7eb'
+    ctx.lineWidth = 2
+    ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20)
+    
+    // Add classrate header
+    ctx.fillStyle = '#8b5cf6'
+    ctx.font = 'bold 24px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+    ctx.fillText('classrate.', 30, 50)
+    
+    // Add author name
+    ctx.fillStyle = '#1f2937'
+    ctx.font = 'bold 18px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+    const authorName = item.type === 'post' ? item.author?.name : item.user?.name
+    if (authorName) {
+      ctx.fillText(authorName, 30, 85)
+    }
+    
+    // Add type badge
+    ctx.fillStyle = '#6b7280'
+    ctx.font = '14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+    const typeText = item.type === 'post' ? 'Post' : `📚 Lecture Review`
+    ctx.fillText(typeText, 30, 105)
+    
+    // Add rating for reviews
+    let yOffset = 125
+    if (item.type === 'lecture-review' && item.rating) {
+      const stars = '★'.repeat(item.rating) + '☆'.repeat(5 - item.rating)
+      ctx.fillStyle = '#f59e0b'
+      ctx.font = '16px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+      ctx.fillText(`${stars} (${item.rating}/5)`, 30, yOffset)
+      yOffset += 25
+    }
+    
+    // Add class info for reviews
+    if (item.type === 'lecture-review' && item.lecture) {
+      ctx.fillStyle = '#6b7280'
+      ctx.font = '14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+      const classInfo = `${item.lecture.class.name} (${item.lecture.class.code})`
+      ctx.fillText(classInfo, 30, yOffset)
+      yOffset += 20
+      
+      if (item.lecture.title) {
+        ctx.fillText(item.lecture.title, 30, yOffset)
+        yOffset += 25
+      } else {
+        yOffset += 15
       }
-      img.onerror = reject
-      img.src = url
-    })
+    }
+    
+    // Add content (wrap text)
+    ctx.fillStyle = '#374151'
+    ctx.font = '16px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+    const maxWidth = 440
+    const lineHeight = 24
+    let y = yOffset
+    
+    const words = item.content.split(' ')
+    let line = ''
+    
+    for (let i = 0; i < words.length; i++) {
+      const testLine = line + words[i] + ' '
+      const metrics = ctx.measureText(testLine)
+      const testWidth = metrics.width
+      
+      if (testWidth > maxWidth && i > 0) {
+        ctx.fillText(line, 30, y)
+        line = words[i] + ' '
+        y += lineHeight
+        
+        // Stop if we're getting too long
+        if (y > 320) {
+          ctx.fillText(line.slice(0, -3) + '...', 30, y)
+          break
+        }
+      } else {
+        line = testLine
+      }
+    }
+    
+    if (y <= 320) {
+      ctx.fillText(line, 30, y)
+    }
+    
+    // Add footer branding
+    ctx.fillStyle = '#8b5cf6'
+    ctx.font = 'bold 16px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+    ctx.fillText('Share your class experiences on classrate.', 30, canvas.height - 30)
+    
+    return canvas.toDataURL('image/png', 1.0)
   }
 
   const handleInstagramStory = async () => {
@@ -142,39 +175,109 @@ export function ShareDialog({ children, item }: ShareDialogProps) {
 
     try {
       // Capture the card as image first
-      const imageData = await captureCardAsImage()
+      const imageDataUrl = await captureCardAsImage()
       
-      if (imageData) {
-        // Convert base64 to blob
-        const response = await fetch(imageData)
-        const blob = await response.blob()
-        
-        // Try to share using Web Share API with image
-        if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], 'classrate-post.png', { type: 'image/png' })] })) {
-          await navigator.share({
-            title: 'classrate.',
-            text: shareText,
-            files: [new File([blob], 'classrate-post.png', { type: 'image/png' })]
-          })
-        } else {
-          // Fallback to Instagram deep links
-          const instagramUrl = `instagram://story-camera`
-          window.location.href = instagramUrl
-          
-          // Show instructions
-          setTimeout(() => {
-            alert('Image copied! Paste it in Instagram Stories. If Instagram didn\'t open, please open the Instagram app manually.')
-          }, 1000)
+      if (imageDataUrl) {
+        // For Instagram, we need to try a different approach
+        // Option 1: Use Instagram's media sharing URL scheme (Android)
+        if (navigator.userAgent.includes('Android')) {
+          try {
+            const response = await fetch(imageDataUrl)
+            const blob = await response.blob()
+            
+            // Try using Instagram's sharing intent with the image
+            const formData = new FormData()
+            formData.append('source_application', 'classrate')
+            formData.append('media', blob, 'classrate-story.png')
+            
+            // Create a temporary form to submit
+            const tempForm = document.createElement('form')
+            tempForm.method = 'POST'
+            tempForm.action = 'instagram://share'
+            tempForm.style.display = 'none'
+            
+            const mediaInput = document.createElement('input')
+            mediaInput.type = 'file'
+            mediaInput.name = 'media'
+            
+            // Convert blob to file
+            const file = new File([blob], 'classrate-story.png', { type: 'image/png' })
+            const dataTransfer = new DataTransfer()
+            dataTransfer.items.add(file)
+            mediaInput.files = dataTransfer.files
+            
+            tempForm.appendChild(mediaInput)
+            document.body.appendChild(tempForm)
+            
+            // Try to submit to Instagram
+            window.location.href = 'instagram://share'
+            
+            // Clean up
+            setTimeout(() => {
+              document.body.removeChild(tempForm)
+            }, 1000)
+            
+          } catch (intentError) {
+            console.error('Instagram intent failed:', intentError)
+            // Fallback to download + manual share
+            downloadAndInstructUser(imageDataUrl)
+          }
+        } 
+        // Option 2: Download image and provide instructions (iOS and fallback)
+        else {
+          downloadAndInstructUser(imageDataUrl)
         }
       } else {
-        // Fallback to text sharing
+        // Image generation failed, fallback to deep link
         window.location.href = 'instagram://story-camera'
       }
       
       setIsOpen(false)
     } catch (error) {
-      console.error('Instagram app not available:', error)
-      alert('Instagram app not found. Please install Instagram to share stories.')
+      console.error('Instagram sharing failed:', error)
+      
+      // Final fallback to deep link
+      try {
+        window.location.href = 'instagram://story-camera'
+        setIsOpen(false)
+      } catch (deepLinkError) {
+        alert('Instagram app not found. Please install Instagram to share stories.')
+      }
+    }
+  }
+
+  const downloadAndInstructUser = (imageDataUrl: string) => {
+    try {
+      // Create download link
+      const link = document.createElement('a')
+      link.href = imageDataUrl
+      link.download = `classrate-${item.type}-${Date.now()}.png`
+      link.style.display = 'none'
+      
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      
+      // Show instructions
+      setTimeout(() => {
+        const proceed = confirm(
+          'Image downloaded! To share to Instagram:\n\n' +
+          '1. Open Instagram\n' +
+          '2. Tap the + button\n' +
+          '3. Select "Story"\n' +
+          '4. Choose the downloaded image from your gallery\n' +
+          '5. Share your classrate post!\n\n' +
+          'Click OK to open Instagram now.'
+        )
+        
+        if (proceed) {
+          window.location.href = 'instagram://story-camera'
+        }
+      }, 500)
+      
+    } catch (downloadError) {
+      console.error('Download failed:', downloadError)
+      alert('Unable to download image. Please try again or screenshot the preview.')
     }
   }
 
@@ -235,65 +338,6 @@ export function ShareDialog({ children, item }: ShareDialogProps) {
         </DialogHeader>
         
         <div className="space-y-4">
-          {/* Card Preview for Image Capture */}
-          <div className="hidden">
-            <Card ref={cardRef} className="w-96 mx-auto bg-white shadow-lg">
-              <CardContent className="p-4">
-                <div className="flex space-x-3">
-                  <Avatar className="h-10 w-10">
-                    <AvatarFallback className="bg-blue-500 text-white">
-                      {item.type === 'post' 
-                        ? item.author?.name.split(' ').map(n => n[0]).join('') 
-                        : item.user?.name.split(' ').map(n => n[0]).join('')
-                      }
-                    </AvatarFallback>
-                  </Avatar>
-                  
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center space-x-2 flex-wrap mb-2">
-                      <h3 className="font-semibold text-sm text-gray-900">
-                        {item.type === 'post' ? item.author?.name : item.user?.name}
-                      </h3>
-                      <span className="text-gray-500 text-sm">
-                        {formatDistanceToNow(item.createdAt, { addSuffix: true })}
-                      </span>
-                      {item.type === 'lecture-review' && (
-                        <Badge variant="outline" className="text-xs bg-blue-50 border-blue-200">
-                          📚 Lecture Review
-                        </Badge>
-                      )}
-                    </div>
-
-                    {item.type === 'lecture-review' && (
-                      <div className="mb-3 p-3 bg-gray-50 rounded-lg">
-                        <div className="flex items-center justify-between mb-2">
-                          <div>
-                            <h4 className="font-medium text-sm text-gray-900">{item.lecture?.class.name}</h4>
-                            <p className="text-xs text-gray-600">{item.lecture?.class.code}</p>
-                          </div>
-                          <div className="flex items-center space-x-1">
-                            {item.rating && renderStars(item.rating)}
-                          </div>
-                        </div>
-                        <p className="text-sm font-medium text-gray-800">
-                          {item.lecture?.title}
-                          {item.lecture?.lectureNumber && ` - Lecture ${item.lecture.lectureNumber}`}
-                        </p>
-                      </div>
-                    )}
-                    
-                    <p className="text-sm text-gray-800 leading-relaxed">{item.content}</p>
-                    
-                    {/* classrate branding */}
-                    <div className="mt-3 pt-3 border-t border-gray-200">
-                      <p className="text-xs text-gray-500 font-medium">classrate.</p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
           {/* Visible Preview */}
           <div className="p-3 bg-gray-50 rounded-lg">
             <div className="flex items-center gap-2 mb-2">
@@ -400,12 +444,12 @@ export function ShareDialog({ children, item }: ShareDialogProps) {
 
           {/* Instagram Tips */}
           <div className="text-xs text-gray-500 bg-pink-50 p-3 rounded-lg">
-            <p className="font-medium text-pink-700 mb-1">📱 Instagram Story Tips:</p>
+            <p className="font-medium text-pink-700 mb-1">📱 Instagram Story Sharing:</p>
             <ul className="space-y-1 text-pink-600">
-              <li>• Best viewed on mobile devices</li>
-              <li>• Card will be captured as a sticker</li>
-              <li>• White background for better visibility</li>
-              <li>• Includes classrate branding</li>
+              <li>• Image will be downloaded to your device</li>
+              <li>• Open Instagram and create a new story</li>
+              <li>• Select the downloaded image from gallery</li>
+              <li>• Perfect for sharing your classrate posts!</li>
             </ul>
           </div>
         </div>

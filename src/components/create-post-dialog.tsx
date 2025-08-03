@@ -75,15 +75,12 @@ export function CreatePostDialog({ open, onOpenChange, onPostCreated, children }
             
             <div className="space-y-4">
               <div className="flex space-x-3">
-                <Avatar className="h-10 w-10">
-                  <AvatarFallback>U</AvatarFallback>
-                </Avatar>
                 <div className="flex-1">
                   <Textarea
                     placeholder="What's on your mind about your classes?"
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
-                    className="min-h-[100px] resize-none border-none shadow-none focus-visible:ring-0 p-0 text-lg"
+                    className="min-h-[100px] resize-none border-none shadow-none focus-visible:ring-0 p-0 text-md"
                     maxLength={280}
                   />
                   <div className="text-sm text-muted-foreground mt-2">

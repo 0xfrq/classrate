@@ -1,6 +1,6 @@
-# RateClass
+# ClassRate
 
-A Twitter-like class review application built with Next.js, allowing students to share experiences, rate classes, and manage course-related tasks.
+A studytwt-like class review application built with Next.js, allowing students to share experiences, rate classes, and manage course-related tasks.
 
 ## Getting Started
 

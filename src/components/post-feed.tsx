@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { CreatePostDialog } from '@/components/create-post-dialog'
 import { CreateLectureReviewDialog } from '@/components/create-lecture-review-dialog'
+import { ShareDialog } from '@/components/share-dialog'
 
 interface PostLike {
   id: string
@@ -399,9 +400,15 @@ export function PostFeed() {
                       </>
                     )}
                     
-                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-green-500">
-                      <Share className="h-4 w-4" />
-                    </Button>
+                    <ShareDialog item={item}>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-muted-foreground hover:text-green-500"
+                      >
+                        <Share className="h-4 w-4" />
+                      </Button>
+                    </ShareDialog>
                   </div>
                   
                   {/* Delete button - only show for content owner */}

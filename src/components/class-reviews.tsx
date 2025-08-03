@@ -132,10 +132,6 @@ export function ClassReviews() {
 
   return (
     <div className="space-y-4 md:space-y-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-        <h2 className="text-xl font-bold">Class Management</h2>
-      </div>
-
       <Tabs defaultValue="classes" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="lectures" className="flex items-center gap-1 text-xs">

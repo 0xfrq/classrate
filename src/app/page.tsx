@@ -40,11 +40,9 @@ export default function Home() {
 
     checkAuth()
 
-    // Check if middleware set a flag to show auth
     const showAuth = document.cookie.includes('show-auth=true')
     if (showAuth) {
       setAuthDialogOpen(true)
-      // Remove the flag
       document.cookie = 'show-auth=; Max-Age=0; path=/'
     }
   }, [])

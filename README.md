@@ -1,36 +1,116 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RateClass
+
+A Twitter-like class review application built with Next.js, allowing students to share experiences, rate classes, and manage course-related tasks.
+
+## Features
+
+### 🐦 Microblogging Feed
+- Twitter-like posts for class discussions
+- Real-time updates and interactions
+- Class-specific hashtags and mentions
+- Like, comment, and share functionality
+
+### ⭐ Class Rating System
+- 1-5 star rating system for classes
+- Detailed reviews and feedback
+- Instructor and semester information
+- Class recommendations based on ratings
+
+### 📝 Review Management
+- Create, read, update, and delete class reviews
+- Search and filter reviews by class, instructor, or semester
+- Anonymous review options
+- Helpful/unhelpful voting system
+
+### ✅ Exercise To-Do Management (Optional)
+- Track assignments and exercises for each class
+- Due date reminders and notifications
+- Mark tasks as complete
+- Progress tracking across multiple classes
+
+### 🔄 Database Synchronization
+- Real-time data persistence with Prisma ORM
+- SQLite database for local development
+- Automatic data syncing across sessions
+- Data backup and recovery features
+
+## Tech Stack
+
+- **Framework**: Next.js 15 with App Router
+- **UI Components**: shadcn/ui + Tailwind CSS
+- **Database**: SQLite with Prisma ORM
+- **Language**: TypeScript
+- **Icons**: Lucide React
+- **Styling**: Tailwind CSS
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js 18+ 
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/yourusername/rateclass.git
+cd rateclass
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Set up the database:
+```bash
+npx prisma generate
+npx prisma db push
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Run the development server:
+```bash
+npm run dev
+```
 
-## Learn More
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-To learn more about Next.js, take a look at the following resources:
+## Database Schema
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The application uses the following main entities:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **User**: User accounts and profiles
+- **Post**: Microblog posts and discussions
+- **Class**: Course information and metadata
+- **ClassReview**: User reviews and ratings for classes
+- **Exercise**: Optional to-do items and assignments
 
-## Deploy on Vercel
+## Project Structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+src/
+├── app/                 # Next.js App Router pages
+├── components/          # React components
+│   ├── ui/             # shadcn/ui components
+│   ├── header.tsx      # Navigation header
+│   ├── sidebar.tsx     # Left sidebar with stats
+│   ├── post-feed.tsx   # Main microblog feed
+│   └── class-reviews.tsx # Class rating section
+├── lib/                # Utility functions
+│   ├── db.ts          # Database connection
+│   └── utils.ts       # Helper functions
+└── prisma/             # Database schema and migrations
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature-name`
+3. Commit your changes: `git commit -am 'Add feature'`
+4. Push to the branch: `git push origin feature-name`
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

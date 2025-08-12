@@ -226,7 +226,7 @@ export function CreateLectureReviewDialog({ open, onOpenChange, onReviewCreated,
                     <SelectContent>
                       {classes.map((classOption) => (
                         <SelectItem key={classOption.id} value={classOption.code}>
-                          {classOption.code} - {classOption.name}
+                          {classOption.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -272,9 +272,6 @@ export function CreateLectureReviewDialog({ open, onOpenChange, onReviewCreated,
                   onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
                   className="bg-muted"
                 />
-                <p className="text-xs text-muted-foreground">
-                  Automatically set to today (Jakarta time)
-                </p>
               </div>
 
               <div className="space-y-2">

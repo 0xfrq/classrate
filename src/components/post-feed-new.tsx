@@ -80,7 +80,6 @@ export function PostFeed() {
   const [likingPosts, setLikingPosts] = useState<Set<string>>(new Set())
 
   useEffect(() => {
-    // Get current user
     const getCurrentUser = async () => {
       try {
         const response = await fetch('/api/auth/me')
@@ -145,7 +144,7 @@ export function PostFeed() {
       })
 
       if (response.ok) {
-        await fetchFeedData() // Refresh to get updated like counts
+        await fetchFeedData() 
       }
     } catch (error) {
       console.error('Error liking post:', error)
@@ -174,7 +173,7 @@ export function PostFeed() {
       if (response.ok) {
         setReplyText(prev => ({ ...prev, [postId]: '' }))
         await fetchReplies(postId)
-        await fetchFeedData() // Refresh to get updated reply counts
+        await fetchFeedData()
       }
     } catch (error) {
       console.error('Error creating reply:', error)
